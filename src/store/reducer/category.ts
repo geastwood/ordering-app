@@ -21,6 +21,6 @@ export default (
       return [...state, action.category]
 
     default:
-      return defaultState
+      return state
   }
 }
