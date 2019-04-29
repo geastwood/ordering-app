@@ -7,6 +7,7 @@ import rootReducer from './reducer'
 
 const persistConfig = {
   key: 'root',
+  blacklist: ['checkout'],
   storage,
 }
 

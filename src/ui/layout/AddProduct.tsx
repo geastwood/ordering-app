@@ -71,8 +71,8 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
     this.clear()
   }
 
-  handleAddCategory = (category: CategoryType) => {
-    this.setState({ categories: [category] })
+  handleAddCategories = (categories: CategoryType[]) => {
+    this.setState({ categories })
   }
 
   handleSubProductToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +144,10 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
                   flexDirection: 'column',
                 }}
               >
-                <CategorySelect onSelect={this.handleAddCategory} />
+                <CategorySelect
+                  onSelect={this.handleAddCategories}
+                  selected={this.state.categories}
+                />
                 <FormControlLabel
                   control={
                     <Checkbox

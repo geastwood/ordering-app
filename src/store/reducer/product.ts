@@ -8,6 +8,7 @@ export type ProductType = {
   isSubProduct: boolean
   categories: CategoryType[]
   subProducts: ProductType[]
+  selectedSubProducts: string[]
 }
 
 const defaultState: ProductType[] = []

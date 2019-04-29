@@ -12,6 +12,7 @@ import Categories from './ui/layout/Categories'
 import AddCategory from './ui/layout/AddCategory'
 import AddProduct from './ui/layout/AddProduct'
 import Order from './ui/layout/Order'
+import Checkout from './ui/layout/Checkout'
 
 const { store, persistor } = createStore(rootSaga)
 
@@ -27,6 +28,7 @@ class Root extends React.PureComponent {
             <Route path="/categories" component={Categories} />
             <Route path="/category/add" component={AddCategory} />
             <Route path="/order" component={Order} />
+            <Route path="/checkout" component={Checkout} />
           </Router>
         </PersistGate>
       </Provider>

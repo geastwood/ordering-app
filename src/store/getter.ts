@@ -40,7 +40,7 @@ const dummyData = [
 ]
 
 export const getOrderBook = (state: AppState) => {
-  const products = [...dummyData, ...dummyData, ...dummyData] //getProducts(state)
+  const { products } = getProducts(state)
   const data = products.reduce((carry, product) => {
     const categories = product.categories
 

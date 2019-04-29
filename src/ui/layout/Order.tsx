@@ -7,6 +7,10 @@ import Scrollspy from 'react-scrollspy'
 import { ProductType } from '../../store/reducer/product'
 import OrderProductCard from '../presentational/OrderProductCard'
 import BlockButton from '../presentational/BlockButton'
+import { isEmpty } from 'lodash'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
+import Container from '../presentational/Container'
+import { compose } from 'redux'
 
 type PropTypes = {
   data: { [key: string]: ProductType[] }
@@ -16,7 +20,10 @@ type StateTypes = {
   selectedProducts: ProductType[]
 }
 
-class OrderBook extends React.PureComponent<PropTypes, StateTypes> {
+class OrderBook extends React.PureComponent<
+  PropTypes & RouteComponentProps<any>,
+  StateTypes
+> {
   state = {
     selectedProducts: [],
   }
@@ -36,8 +43,30 @@ class OrderBook extends React.PureComponent<PropTypes, StateTypes> {
     })
   }
 
+  handleSubProductSelect = (subProducts: ProductType[]) => {}
+
   render() {
     const { data } = this.props
+    const empty = isEmpty(data)
+
+    if (empty) {
+      return (
+        <Container>
+          <SimpleNavigation title="下单" rightAction={null}>
+            <div
+              style={{
+                display: 'flex',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <p>请先添加产品以及分类</p>
+            </div>
+          </SimpleNavigation>
+        </Container>
+      )
+    }
     return (
       <SimpleNavigation title="下单" rightAction={null}>
         <Grid container>
@@ -60,35 +89,52 @@ class OrderBook extends React.PureComponent<PropTypes, StateTypes> {
             </div>
           </Grid>
           <Grid item xs={9}>
-            {Object.keys(this.props.data).map(categoryName => (
-              <section key={categoryName} id={categoryName}>
-                {this.props.data[categoryName].map(product => (
-                  <ListItem>
-                    <OrderProductCard
-                      selectedProducts={this.state.selectedProducts}
-                      product={product}
-                      onAdd={this.addProduct}
-                      onRemove={this.removeProduct}
-                    />
-                  </ListItem>
-                ))}
-              </section>
-            ))}
+            <div style={{ paddingBottom: '4rem' }}>
+              {Object.keys(this.props.data).map(categoryName => (
+                <section key={categoryName} id={categoryName}>
+                  {this.props.data[categoryName].map(product => (
+                    <ListItem>
+                      <OrderProductCard
+                        selectedProducts={this.state.selectedProducts}
+                        product={product}
+                        onAdd={this.addProduct}
+                        onRemove={this.removeProduct}
+                      />
+                    </ListItem>
+                  ))}
+                </section>
+              ))}
+            </div>
           </Grid>
         </Grid>
-        <div style={{ width: '95%', position: 'fixed', bottom: '1rem' }}>
-          <BlockButton
-            variant="outlined"
-            size="large"
-            color="primary"
-            onClick={() => alert('fei')}
-          >
-            结账 ({this.state.selectedProducts.length})
-          </BlockButton>
-        </div>
+        <Grid container>
+          <Grid item xs={12}>
+            <div
+              style={{
+                width: '95%',
+                position: 'fixed',
+                backgroundColor: '#fff',
+                bottom: 0,
+                paddingBottom: '1rem',
+              }}
+            >
+              <BlockButton
+                variant="outlined"
+                size="large"
+                color="primary"
+                onClick={() => this.props.history.push('/checkout')}
+              >
+                结账 ({this.state.selectedProducts.length})
+              </BlockButton>
+            </div>
+          </Grid>
+        </Grid>
       </SimpleNavigation>
     )
   }
 }
 
-export default connect(getOrderBook)(OrderBook)
+export default compose(
+  withRouter,
+  connect(getOrderBook)
+)(OrderBook)

@@ -1,5 +1,6 @@
 import { ProductType } from './reducer/product'
 import { CategoryType } from './reducer/category'
+import { CheckoutDataType } from './reducer/checkout'
 
 export interface ProductAddType {
   type: typeof PRODUCT_ADD
@@ -11,8 +12,14 @@ export interface CategoryAddType {
   category: CategoryType
 }
 
+export interface CheckoutReceiveType {
+  type: typeof CHECKOUT_RECEIVE
+  checkout: CheckoutDataType
+}
+
 export const PRODUCT_ADD = 'store/PRODUCT_ADD'
 export const CATEGORY_ADD = 'store/CATEGORY_ADD'
+export const CHECKOUT_RECEIVE = 'store/CHECKOUT_RECEIVE'
 
 export const productAdd = (product: ProductType) => ({
   type: PRODUCT_ADD,
@@ -24,4 +31,12 @@ export const categoryAdd = (category: CategoryType) => ({
   category,
 })
 
-export type StoreActionTypes = ProductAddType | CategoryAddType
+export const checkoutReceive = (checkout: CheckoutDataType) => ({
+  type: CHECKOUT_RECEIVE,
+  checkout,
+})
+
+export type StoreActionTypes =
+  | ProductAddType
+  | CategoryAddType
+  | CheckoutReceiveType

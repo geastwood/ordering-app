@@ -14,11 +14,11 @@ import {
 
 type PropTypes = {
   categories: CategoryType[]
-  onSelect: (category: CategoryType) => void
+  selected: CategoryType[]
+  onSelect: (categories: CategoryType[]) => void
 }
 type StateProps = {
   labelWidth: 0
-  selectedCategories: CategoryType[]
 }
 
 class CategorySelect extends React.PureComponent<PropTypes, StateProps> {
@@ -26,7 +26,7 @@ class CategorySelect extends React.PureComponent<PropTypes, StateProps> {
   constructor(props: PropTypes) {
     super(props)
     this.InputLabelRef = null
-    this.state = { labelWidth: 0, selectedCategories: [] }
+    this.state = { labelWidth: 0 }
   }
 
   componentDidMount() {
@@ -44,9 +44,7 @@ class CategorySelect extends React.PureComponent<PropTypes, StateProps> {
       return
     }
 
-    this.setState({ selectedCategories: [category] })
-
-    this.props.onSelect(category)
+    this.props.onSelect([category])
   }
 
   render() {
@@ -62,7 +60,7 @@ class CategorySelect extends React.PureComponent<PropTypes, StateProps> {
         </InputLabel>
         <Select
           disabled={this.props.categories.length === 0}
-          value={get(this.state, 'selectedCategories[0].id', 'none')}
+          value={get(this.props, 'selected[0].id', 'none')}
           onChange={this.handleChange}
           input={
             <OutlinedInput
