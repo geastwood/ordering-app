@@ -15,7 +15,6 @@ function* handleCreateProduct() {
     const product: ProductType = {
       ...action.payload,
       id,
-      subProducts: [],
     }
 
     yield put(storeActions.productAdd(product))

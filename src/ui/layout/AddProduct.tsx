@@ -1,12 +1,7 @@
 import * as React from 'react'
 import Container from '../presentational/Container'
 import SimpleNavigation from '../layout/SimpleNavigation'
-import {
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Divider,
-} from '@material-ui/core'
+import { TextField, FormControlLabel, Checkbox } from '@material-ui/core'
 import FlexContainer from '../presentational/FlexContainer'
 import BottomButtonGroup from '../presentational/BottomButtonGroup'
 import { compose } from 'redux'
@@ -15,8 +10,13 @@ import { connect } from 'react-redux'
 import * as uiActions from '../../saga/action'
 import CategorySelect from './CategorySelect'
 import { CategoryType } from '../../store/reducer/category'
+import ProductSelectList from '../presentational/ProductSelectList'
+import { getProducts } from '../../store/getter'
+import { ProductType } from '../../store/reducer/product'
+import { omit } from 'lodash'
 
 type PropTypes = {
+  products: ProductType[]
   onCancel: () => void
   onSubmit: (product: StateTypes) => void
 }
@@ -25,15 +25,19 @@ type StateTypes = {
   price: string
   isSubProduct: boolean
   name: string
+  toAddSubProducts: boolean
   categories: CategoryType[]
+  subProducts: ProductType[]
 }
 
 class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
   state = {
     price: '',
     isSubProduct: false,
+    toAddSubProducts: false,
     name: '',
     categories: [],
+    subProducts: [],
   }
   handleValueChange = (prop: string) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -42,7 +46,14 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
   }
 
   clear = () => {
-    this.setState({ price: '', name: '', isSubProduct: false, categories: [] })
+    this.setState({
+      price: '',
+      name: '',
+      isSubProduct: false,
+      toAddSubProducts: false,
+      categories: [],
+      subProducts: [],
+    })
   }
   handleSubmit = () => {
     if (this.state.name == null || this.state.name.length === 0) {
@@ -56,7 +67,7 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
       this.clear()
       return
     }
-    this.props.onSubmit(this.state)
+    this.props.onSubmit(omit(this.state, ['toAddSubProducts']))
     this.clear()
   }
 
@@ -68,7 +79,30 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
     this.setState({ isSubProduct: event.target.checked })
   }
 
+  handleAddSubProductsToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ toAddSubProducts: event.target.checked })
+  }
+
+  handleSubProductChange = (product: ProductType) => {
+    let updatedList = []
+    const selected = this.state.subProducts.find(sub => sub.id === product.id)
+
+    if (selected) {
+      updatedList = this.state.subProducts.filter(sub => sub.id !== product.id)
+    } else {
+      updatedList = [...this.state.subProducts, product]
+    }
+
+    this.setState({
+      subProducts: updatedList,
+    })
+  }
+
   render() {
+    const subProductList = this.props.products.filter(
+      ({ isSubProduct }) => isSubProduct === true
+    )
+
     return (
       <Container>
         <SimpleNavigation title="添加产品" rightAction={null}>
@@ -107,11 +141,31 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
                 style={{
                   marginTop: '15px',
                   display: 'flex',
-                  flex: 1,
                   flexDirection: 'column',
                 }}
               >
                 <CategorySelect onSelect={this.handleAddCategory} />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      disabled={subProductList.length === 0}
+                      checked={this.state.toAddSubProducts}
+                      onChange={this.handleAddSubProductsToggle}
+                      value="to-add-subproduct"
+                    />
+                  }
+                  label="添加子产品"
+                />
+              </div>
+
+              <div style={{ overflow: 'scroll', display: 'flex', flex: 1 }}>
+                {this.state.toAddSubProducts ? (
+                  <ProductSelectList
+                    products={subProductList}
+                    selectedProducts={this.state.subProducts}
+                    onSelect={this.handleSubProductChange}
+                  />
+                ) : null}
               </div>
             </FlexContainer>
             <BottomButtonGroup
@@ -128,7 +182,7 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
 const ConnectedAddProduct = compose(
   withRouter,
   connect(
-    null,
+    getProducts,
     {
       onSubmit: uiActions.addProduct,
     }
