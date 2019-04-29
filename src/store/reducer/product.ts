@@ -5,6 +5,7 @@ export type ProductType = {
   id: string
   name: string
   price: string
+  isSubProduct: boolean
   categories: CategoryType[]
   subProducts: ProductType[]
 }

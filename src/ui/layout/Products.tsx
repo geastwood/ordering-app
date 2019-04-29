@@ -23,13 +23,26 @@ class Products extends React.PureComponent<PropTypes> {
             <AddButton onClick={() => props.history.push('/product/add')} />
           )}
         >
-          <List>
-            {products.map(product => (
-              <ListItem key={product.id}>
-                <ProductCard product={product} />
-              </ListItem>
-            ))}
-          </List>
+          {products.length ? (
+            <List>
+              {products.map(product => (
+                <ListItem key={product.id}>
+                  <ProductCard product={product} />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <p>无产品定义，点击右上角"+"，添加产品</p>
+            </div>
+          )}
         </SimpleNavigation>
       </Container>
     )

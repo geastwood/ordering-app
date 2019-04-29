@@ -23,13 +23,26 @@ class Categories extends React.PureComponent<PropTypes> {
             <AddButton onClick={() => props.history.push('/category/add')} />
           )}
         >
-          <List>
-            {categories.map(category => (
-              <ListItem key={category.id}>
-                <CategoryCard category={category} />
-              </ListItem>
-            ))}
-          </List>
+          {categories.length ? (
+            <List>
+              {categories.map(category => (
+                <ListItem key={category.id}>
+                  <CategoryCard category={category} />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <p>无产品分类，点击右上角"+"，添加分类</p>
+            </div>
+          )}
         </SimpleNavigation>
       </Container>
     )
