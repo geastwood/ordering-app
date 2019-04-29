@@ -1,4 +1,5 @@
 import { AppState } from './reducer/index'
+import { stat } from 'fs'
 
 export const getProducts = (state: AppState) => ({ products: state.product })
 export const getCategories = (state: AppState) => ({
@@ -44,7 +45,6 @@ export const getOrderBook = (state: AppState) => {
   const data = products.reduce((carry, product) => {
     const categories = product.categories
 
-    console.log(categories)
     categories.forEach(category => {
       if (carry[category.name]) {
         carry[category.name] = carry[category.name].concat(product)
@@ -55,5 +55,9 @@ export const getOrderBook = (state: AppState) => {
 
     return carry
   }, {})
-  return { data }
+  return { data, checkout: state.checkout }
 }
+
+export const getCheckout = (state: AppState) => ({
+  checkout: state.checkout,
+})

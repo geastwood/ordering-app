@@ -22,6 +22,7 @@ const ButtonContainer = styled.div`
 type PropTypes = RouteComponentProps<{}> & {
   children: React.ReactNode
   title: string
+  onBackClick: any
   rightAction: any
 }
 
@@ -32,7 +33,13 @@ class SimpleNavigation extends React.PureComponent<PropTypes> {
       <FlexContainer>
         <Container>
           <ButtonContainer>
-            <BackIcon onClick={() => history.goBack()} />
+            <BackIcon
+              onClick={
+                this.props.onBackClick
+                  ? () => this.props.onBackClick(history)
+                  : () => history.goBack()
+              }
+            />
           </ButtonContainer>
           <div
             style={{

@@ -21,6 +21,9 @@ type PropTypes = {
   selectedProducts: ProductType[]
   onRemove: (product: ProductType) => void
   onAdd: (product: ProductType) => void
+  onSubProductAdd: (productId: string, subProduct: ProductType) => void
+  onSubProductRemove: (productId: string, subProduct: ProductType) => void
+  selectedSubProducts: ProductType[]
 }
 
 const FullWidthCard = withStyles({
@@ -40,7 +43,7 @@ export default class ProductCard extends React.PureComponent<
 > {
   state = {
     openSubProductsSelection: false,
-    selectedSubProducts: [],
+    selectedSubProducts: this.props.selectedSubProducts,
   }
   openSelectSubProducts = () => {
     this.setState({ openSubProductsSelection: true })
@@ -54,17 +57,19 @@ export default class ProductCard extends React.PureComponent<
     this.props.onRemove(product)
   }
 
-  handleSubProductAdd = (subproduct: ProductType) => {
+  handleSubProductAdd = (productId: string, subproduct: ProductType) => {
     this.setState({
       selectedSubProducts: [...this.state.selectedSubProducts, subproduct],
     })
+    this.props.onSubProductAdd(productId, subproduct)
   }
-  handleSubProductRemove = (subproduct: ProductType) => {
+  handleSubProductRemove = (productId: string, subproduct: ProductType) => {
     this.setState({
       selectedSubProducts: this.state.selectedSubProducts.filter(
         s => s.id !== subproduct.id
       ),
     })
+    this.props.onSubProductRemove(productId, subproduct)
   }
 
   render() {
@@ -100,12 +105,16 @@ export default class ProductCard extends React.PureComponent<
                     </Grid>
                     <Grid item xs={2}>
                       <DeleteIcon
-                        onClick={() => this.handleSubProductRemove(subproduct)}
+                        onClick={() =>
+                          this.handleSubProductRemove(product.id, subproduct)
+                        }
                       />
                     </Grid>
                     <Grid item xs={2}>
                       <AddIcon
-                        onClick={() => this.handleSubProductAdd(subproduct)}
+                        onClick={() =>
+                          this.handleSubProductAdd(product.id, subproduct)
+                        }
                       />
                     </Grid>
                   </Grid>

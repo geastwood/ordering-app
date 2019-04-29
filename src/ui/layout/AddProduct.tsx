@@ -62,7 +62,10 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
       return
     }
 
-    if (Number.isNaN(Number(this.state.price))) {
+    if (
+      this.state.price.length === 0 ||
+      Number.isNaN(Number(this.state.price))
+    ) {
       alert('产品价格无效，请重新输入')
       this.clear()
       return

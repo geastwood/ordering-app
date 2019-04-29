@@ -1,14 +1,20 @@
 import { StoreActionTypes, CHECKOUT_RECEIVE } from '../action'
 import { ProductType } from './product'
 
-export type CheckoutDataType = ProductType[]
+export type CheckoutDataType = {
+  selectedProducts: ProductType[]
+  subProductsMap: { [key: string]: ProductType[] }
+}
 
-const defaultState: ProductType[] = []
+const defaultState: CheckoutDataType = {
+  selectedProducts: [],
+  subProductsMap: {},
+}
 
 export default (
-  state: ProductType[] = defaultState,
+  state: CheckoutDataType = defaultState,
   action: StoreActionTypes
-): ProductType[] => {
+): CheckoutDataType => {
   switch (action.type) {
     case CHECKOUT_RECEIVE:
       return action.checkout

@@ -37,10 +37,21 @@ function* handleCreateCategory() {
   }
 }
 
+function* handleCheckout() {
+  while (true) {
+    const action: ReturnType<typeof uiActions.checkout> = yield take(
+      uiActions.CHECKOUT
+    )
+
+    yield put(storeActions.checkoutReceive(action.payload))
+  }
+}
+
 function* rootSaga() {
   try {
     yield fork(handleCreateProduct)
     yield fork(handleCreateCategory)
+    yield fork(handleCheckout)
   } catch (e) {}
 }
 
