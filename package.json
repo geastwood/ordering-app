@@ -1,18 +1,15 @@
 {
-  "name": "project",
+  "name": "ordering-app",
   "version": "0.0.1",
-  "description": "Another awesome project",
+  "description": "Ordering app",
   "main": "index.js",
   "scripts": {
     "start": "parcel src/index.html",
+    "build": "parcel build src/index.html",
     "watch": "NODE_ENV=development parcel watch --log-level=3 src/index.html ",
     "test": "jest"
   },
-  "keywords": [
-    "everitoken",
-    "signer",
-    "extension"
-  ],
+  "keywords": [],
   "author": "Fei Liu <liu.feiwood@gmail.com>",
   "license": "MIT",
   "dependencies": {
