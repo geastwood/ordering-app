@@ -1,4 +1,12 @@
-import { delay, fork, take, put, select, call } from 'redux-saga/effects'
+import {
+  delay,
+  fork,
+  take,
+  put,
+  select,
+  call,
+  cancel,
+} from 'redux-saga/effects'
 import * as uiActions from './action'
 import * as storeActions from '../store/action'
 import * as uuid from 'uuid'
@@ -7,7 +15,7 @@ import { CategoryType } from '../store/reducer/category'
 import * as qrcode from 'qrcode'
 import { calculateCheckAmount } from '../ui/util'
 import { getClient, getCheckout } from '../store/getter'
-import { ClientType } from '../store/reducer/client'
+import { AppState } from '../store/reducer/index'
 
 function* handleLogout() {
   while (true) {
@@ -39,6 +47,7 @@ function* handleLogin() {
           }),
         }
       )
+
       const json = yield res.json()
       if (json.status === 'success') {
         yield put(storeActions.clientReceive(json))
@@ -52,8 +61,37 @@ function* handleLogin() {
 }
 
 function* printReceipt() {
-  const { checkout } = yield select(getCheckout)
-  console.log(checkout)
+  const { checkout }: AppState = yield select(getCheckout)
+  const { client }: AppState = yield select(getClient)
+
+  const { sumProducts, sumSubProducts } = calculateCheckAmount(checkout)
+  const { selectedProducts, subProductsMap } = checkout
+
+  const menu = selectedProducts
+    .map(product => ({
+      name: product.name,
+      price: Number(product.price).toFixed(2),
+    }))
+    .concat(
+      Object.keys(subProductsMap).reduce((carry, name) => {
+        return carry.concat(
+          subProductsMap[name].map(product => ({
+            name: product.name,
+            price: Number(product.price).toFixed(2),
+          }))
+        )
+      }, [])
+    )
+
+  const data = {
+    menu,
+    totalAmount: (sumProducts + sumSubProducts).toFixed(2),
+    subMerchantId: client.userId,
+    subMerchantDisplayName: client.displayName,
+  }
+
+  console.log(data)
+  //   app.print(JSON.stringify(data))
 }
 
 function* handleResetCheckout() {
@@ -64,36 +102,44 @@ function* handleResetCheckout() {
   }
 }
 
-function* handlePollingCheckoutStatus() {
-  while (true) {
-    const action: ReturnType<typeof uiActions.pollCheckoutStatus> = yield take(
-      uiActions.POLL_CHECKOUT_STATUS
-    )
+function* handlePollingCheckoutStatus(prepayId: string) {
+  yield call(printReceipt)
+  let success = false
+  while (!success) {
+    try {
+      const url = `https://v1.api.tc.vastchain.ltd/submerchant-pay/prePay/${prepayId}?waitForFinish=1`
+      const res = yield fetch(url)
+      const json = yield res.json()
 
-    let success = false
-    yield call(printReceipt)
-    while (!success) {
-      try {
-        const url = `https://v1.api.tc.vastchain.ltd/submerchant-pay/prePay/${
-          action.payload
-        }?waitForFinish=1`
-
-        const res = yield fetch(url)
-        const json = yield res.json()
-
-        console.log(json.status)
-        if (json.status === 'finish') {
-          success = true
-          yield put(storeActions.markPaid())
-          yield put(storeActions.checkoutRemove())
-        } else {
-          yield delay(50)
-        }
-      } catch (error) {
-        console.error(error)
+      if (json.status === 'finish') {
+        success = true
+        yield put(storeActions.markPaid())
+        yield put(storeActions.checkoutRemove())
+        printReceipt()
+      } else {
+        yield delay(50)
       }
+    } catch (error) {
+      console.error(error)
     }
   }
+}
+function* saveData() {
+  const state: AppState = yield select()
+  yield fetch(
+    `https://v1.api.tc.vastchain.ltd/submerchant-pay/backup?submerchantId=${
+      state.client.userId
+    }`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        localStorage: state,
+      }),
+    }
+  )
 }
 
 function* handleCreateProduct() {
@@ -107,6 +153,8 @@ function* handleCreateProduct() {
       ...action.payload,
       id,
     }
+
+    yield fork(saveData)
 
     yield put(storeActions.productAdd(product))
   }
@@ -124,31 +172,33 @@ function* handleCreateCategory() {
       id,
     }
 
+    yield fork(saveData)
     yield put(storeActions.categoryAdd(category))
   }
 }
 
+// cached polling module
+const checker = null
+
 function* handleCheckout() {
   while (true) {
-    const action: ReturnType<typeof uiActions.checkout> = yield take(
-      uiActions.CHECKOUT
-    )
-
+    yield take(uiActions.CHECKOUT)
     yield put(storeActions.pendingCheckoutRemove())
 
-    const { client }: { client: ClientType } = yield select(getClient)
+    const { client }: AppState = yield select(getClient)
+
+    if (checker) {
+      yield cancel(checker)
+    }
 
     if (!client.userId) {
       alert('无法得到商户信息。')
       break
     }
+    const { checkout } = yield select(getCheckout)
 
-    yield put(storeActions.checkoutReceive(action.payload))
-
-    const { sumProducts, sumSubProducts } = calculateCheckAmount(action.payload)
+    const { sumProducts, sumSubProducts } = calculateCheckAmount(checkout)
     const totalAmount = (sumProducts + sumSubProducts).toFixed(2)
-
-    const extraInfo = action.payload
 
     const res = yield fetch(
       'https://v1.api.tc.vastchain.ltd/submerchant-pay/',
@@ -161,7 +211,7 @@ function* handleCheckout() {
           subMerchantId: client.userId,
           orderId: null,
           totalAmount,
-          extraInfo,
+          extraInfo: checkout,
         }),
       }
     )
@@ -195,6 +245,9 @@ function* handleCheckout() {
       width: 500,
     })
 
+    // fork the polling checker
+    checker = yield fork(handlePollingCheckoutStatus, prepayId)
+
     yield put(
       storeActions.pendingCheckoutReceive({
         qrCode: qrcodeUrl,
@@ -210,7 +263,6 @@ function* rootSaga() {
     yield fork(handleCreateProduct)
     yield fork(handleCreateCategory)
     yield fork(handleCheckout)
-    yield fork(handlePollingCheckoutStatus)
     yield fork(handleResetCheckout)
     yield fork(handleLogin)
     yield fork(handleLogout)

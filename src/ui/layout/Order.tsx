@@ -13,59 +13,55 @@ import Container from '../presentational/Container'
 import { compose } from 'redux'
 import { CheckoutDataType } from '../../store/reducer/checkout'
 import { checkout } from '../../saga/action'
+import { checkoutReceive } from '../../store/action'
 
 type PropTypes = {
   data: { [key: string]: ProductType[] }
   checkout: CheckoutDataType
-  onCheckoutClicked: (d: CheckoutDataType) => ReturnType<typeof checkout>
+  onCheckoutClicked: () => ReturnType<typeof checkout>
+  updateCheckout: (checkout: CheckoutDataType) => void
 }
 
-type StateTypes = {
-  selectedProducts: ProductType[]
-  subProductsMap: { [key: string]: ProductType[] }
-}
+type StateTypes = {}
 
 class OrderBook extends React.PureComponent<
   PropTypes & RouteComponentProps<any>,
   StateTypes
 > {
-  state = {
-    selectedProducts: this.props.checkout.selectedProducts,
-    subProductsMap: this.props.checkout.subProductsMap,
-  }
-
   removeProduct = (product: ProductType) => {
-    const updateProducts = this.state.selectedProducts.filter(
+    const updateProducts = this.props.checkout.selectedProducts.filter(
       p => p.id !== product.id
     )
 
-    const newMap = this.state.subProductsMap
+    const newMap = this.props.checkout.subProductsMap
     delete newMap[product.id]
 
-    this.setState({
+    this.props.updateCheckout({
       selectedProducts: updateProducts,
       subProductsMap: newMap,
     })
   }
 
   addProduct = (product: ProductType) => {
-    this.setState({
-      selectedProducts: [...this.state.selectedProducts, product],
+    this.props.updateCheckout({
+      selectedProducts: [...this.props.checkout.selectedProducts, product],
+      subProductsMap: this.props.checkout.subProductsMap,
     })
   }
 
   handleSubProductAdd = (productId: string, subProduct: ProductType) => {
-    const list = this.state.subProductsMap[productId] || []
-    this.setState({
+    const list = this.props.checkout.subProductsMap[productId] || []
+    this.props.updateCheckout({
+      selectedProducts: this.props.checkout.selectedProducts,
       subProductsMap: {
-        ...this.state.subProductsMap,
+        ...this.props.checkout.subProductsMap,
         [productId]: list.concat(subProduct),
       },
     })
   }
 
   handleSubProductRemove = (productId: string, subProduct: ProductType) => {
-    const list = this.state.subProductsMap[productId] || []
+    const list = this.props.checkout.subProductsMap[productId] || []
     let hasMatch = false
 
     let newList = []
@@ -82,21 +78,21 @@ class OrderBook extends React.PureComponent<
       }
     })
 
-    this.setState({
+    this.props.updateCheckout({
+      selectedProducts: this.props.checkout.selectedProducts,
       subProductsMap: {
-        ...this.state.subProductsMap,
+        ...this.props.checkout.subProductsMap,
         [productId]: newList,
       },
     })
   }
 
   handleCheckout = () => {
-    console.log('state', this.state)
-    this.props.onCheckoutClicked(this.state)
+    this.props.onCheckoutClicked()
     this.props.history.push('/checkout')
   }
   handleReset = () => {
-    this.setState({
+    this.props.updateCheckout({
       selectedProducts: [],
       subProductsMap: {},
     })
@@ -156,9 +152,9 @@ class OrderBook extends React.PureComponent<
                   {this.props.data[categoryName].map(product => (
                     <ListItem>
                       <OrderProductCard
-                        selectedProducts={this.state.selectedProducts}
+                        selectedProducts={this.props.checkout.selectedProducts}
                         selectedSubProducts={
-                          this.state.subProductsMap[product.id] || []
+                          this.props.checkout.subProductsMap[product.id] || []
                         }
                         product={product}
                         onAdd={this.addProduct}
@@ -190,7 +186,7 @@ class OrderBook extends React.PureComponent<
                 color="primary"
                 onClick={this.handleCheckout}
               >
-                结账 ({this.state.selectedProducts.length})
+                结账 ({this.props.checkout.selectedProducts.length})
               </BlockButton>
             </div>
           </Grid>
@@ -204,6 +200,6 @@ export default compose(
   withRouter,
   connect(
     getOrderBook,
-    { onCheckoutClicked: checkout }
+    { onCheckoutClicked: checkout, updateCheckout: checkoutReceive }
   )
 )(OrderBook)

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Container from '../presentational/Container'
 import SimpleNavigation from './SimpleNavigation'
-import { Typography, Button } from '@material-ui/core'
+import { Typography, Button, CircularProgress } from '@material-ui/core'
 import { getCheckout } from '../../store/getter'
 import { CheckoutDataType } from '../../store/reducer/checkout'
 import { connect } from 'react-redux'
@@ -14,7 +14,7 @@ import { withRouter, RouteComponentProps } from 'react-router'
 type PropTypes = {
   checkout: CheckoutDataType
   pendingCheckout: PendingCheckoutType
-  onMount: (prepayId: string) => void
+  triggerPolling: (prepayId: string) => void
   onResetCheckout: () => void
 }
 
@@ -26,37 +26,15 @@ class Checkout extends React.PureComponent<
 > {
   state = {}
 
-  //   componentDidUpdate() {
-  //     // start polling for order status
-  //     if (
-  //       !this.props.pendingCheckout.paid &&
-  //       this.props.pendingCheckout.prepayId
-  //     ) {
-  //       this.props.onMount &&
-  //         this.props.onMount(this.props.pendingCheckout.prepayId)
-  //     }
-  //   }
-
-  componentWillReceiveProps(newProps: PropTypes) {
-    console.log(
-      this.props.pendingCheckout.prepayId,
-      newProps.pendingCheckout.prepayId
-    )
-    if (
-      !this.props.pendingCheckout.paid &&
-      this.props.pendingCheckout.prepayId !== newProps.pendingCheckout.prepayId
-    ) {
-      newProps.pendingCheckout.prepayId &&
-        this.props.onMount(newProps.pendingCheckout.prepayId)
-    }
-  }
-
   handleConfirm = () => {
     this.props.onResetCheckout()
     this.props.history.push('/')
   }
 
   render() {
+    // if (this.props.pendingCheckout.prepayId) {
+    //   this.props.triggerPolling(this.props.pendingCheckout.prepayId)
+    // }
     const { sumProducts, sumSubProducts } = calculateCheckAmount(
       this.props.checkout
     )
@@ -94,7 +72,7 @@ class Checkout extends React.PureComponent<
 
             {!paid ? (
               <Typography variant="h4">
-                {sumProducts + sumSubProducts}元
+                {(sumProducts + sumSubProducts).toFixed(2)}元
               </Typography>
             ) : null}
           </div>
@@ -108,6 +86,6 @@ export default compose(
   withRouter,
   connect(
     getCheckout,
-    { onMount: pollCheckoutStatus, onResetCheckout: resetCheckout }
+    { triggerPolling: pollCheckoutStatus, onResetCheckout: resetCheckout }
   )
 )(Checkout)

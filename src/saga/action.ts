@@ -34,9 +34,8 @@ export const addCategory = (payload: { name: string }) => ({
   payload,
 })
 
-export const checkout = (payload: CheckoutDataType) => ({
+export const checkout = () => ({
   type: CHECKOUT,
-  payload,
 })
 
 export const pollCheckoutStatus = (prepayId: string) => ({
