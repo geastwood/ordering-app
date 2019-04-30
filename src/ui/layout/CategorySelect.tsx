@@ -71,7 +71,7 @@ class CategorySelect extends React.PureComponent<PropTypes, StateProps> {
           }
         >
           <MenuItem value="none">
-            <em>None</em>
+            <em>无分类</em>
           </MenuItem>
           {this.props.categories.map(category => (
             <MenuItem key={category.id} value={category.id}>

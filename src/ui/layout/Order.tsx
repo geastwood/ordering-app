@@ -14,6 +14,7 @@ import { compose } from 'redux'
 import { CheckoutDataType } from '../../store/reducer/checkout'
 import { checkout } from '../../saga/action'
 import { checkoutReceive } from '../../store/action'
+import { calculateCheckAmount } from '../util'
 
 type PropTypes = {
   data: { [key: string]: ProductType[] }
@@ -181,12 +182,13 @@ class OrderBook extends React.PureComponent<
               }}
             >
               <BlockButton
-                variant="outlined"
                 size="large"
+                variant="contained"
                 color="primary"
                 onClick={this.handleCheckout}
               >
-                结账 ({this.props.checkout.selectedProducts.length})
+                结账 ({calculateCheckAmount(this.props.checkout).formattedSum}
+                元)
               </BlockButton>
             </div>
           </Grid>

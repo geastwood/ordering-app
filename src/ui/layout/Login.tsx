@@ -45,7 +45,6 @@ class Login extends React.PureComponent<PropTypes, StateTypes> {
           <FlexContainer justifyContent="flex-start">
             <TextField
               id="username"
-              label="用户名"
               placeholder="输入用户名"
               fullWidth
               value={this.state.username}
@@ -58,7 +57,6 @@ class Login extends React.PureComponent<PropTypes, StateTypes> {
             />
             <TextField
               id="password"
-              label="密码"
               value={this.state.password}
               placeholder="输入密码"
               type="password"

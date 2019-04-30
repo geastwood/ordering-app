@@ -90,8 +90,9 @@ function* printReceipt() {
     subMerchantDisplayName: client.displayName,
   }
 
-  console.log(data)
-  //   app.print(JSON.stringify(data))
+  try {
+    app.print(JSON.stringify(data))
+  } catch (error) {}
 }
 
 function* handleResetCheckout() {
@@ -165,7 +166,8 @@ function* handleCreateCategory() {
     const action: ReturnType<typeof uiActions.addCategory> = yield take(
       uiActions.ADD_CATEGORY
     )
-    const id = uuid.v4()
+
+    const id = action.payload.id || uuid.v4()
 
     const category: CategoryType = {
       ...action.payload,

@@ -1,6 +1,5 @@
 import { CategoryType } from '../store/reducer/category'
 import { ProductType } from '../store/reducer/product'
-import { CheckoutDataType } from '../store/reducer/checkout'
 
 export const ADD_PRODUCT = 'ui/ADD_PRODUCT'
 export const ADD_CATEGORY = 'ui/ADD_CATEGORY'
@@ -29,7 +28,7 @@ export const addProduct = (payload: {
   type: ADD_PRODUCT,
   payload,
 })
-export const addCategory = (payload: { name: string }) => ({
+export const addCategory = (payload: CategoryType) => ({
   type: ADD_CATEGORY,
   payload,
 })

@@ -108,7 +108,11 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
 
     return (
       <Container>
-        <SimpleNavigation title="添加产品" rightAction={null}>
+        <SimpleNavigation
+          onBackClick={null}
+          title="添加产品"
+          rightAction={null}
+        >
           <FlexContainer>
             <FlexContainer justifyContent="flex-start">
               <TextField
@@ -117,7 +121,7 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
                 required
                 value={this.state.name}
                 onChange={this.handleValueChange('name')}
-                variant="outlined"
+                variant="standard"
                 label="产品名称"
               />
               <FormControlLabel
@@ -132,7 +136,7 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
               />
               <TextField
                 id="outlined-adornment-amount"
-                variant="outlined"
+                variant="standard"
                 required
                 label="价格"
                 onChange={this.handleValueChange('price')}
@@ -154,7 +158,9 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      disabled={subProductList.length === 0}
+                      disabled={
+                        this.state.isSubProduct || subProductList.length === 0
+                      }
                       checked={this.state.toAddSubProducts}
                       onChange={this.handleAddSubProductsToggle}
                       value="to-add-subproduct"

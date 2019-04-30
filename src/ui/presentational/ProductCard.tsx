@@ -37,11 +37,6 @@ export default class ProductCard extends React.PureComponent<PropTypes> {
             ))}
           </div>
         </CardContent>
-        <CardActions>
-          <Button variant="outlined" size="small">
-            修改
-          </Button>
-        </CardActions>
       </FullWidthCard>
     )
   }

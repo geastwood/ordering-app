@@ -8,6 +8,7 @@ import {
   Button,
   withStyles,
 } from '@material-ui/core'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 
 type PropTypes = {
   category: CategoryType
@@ -19,7 +20,9 @@ const FullWidthCard = withStyles({
   },
 })(Card)
 
-export default class ProductCard extends React.PureComponent<PropTypes> {
+class CategoryCard extends React.PureComponent<
+  PropTypes & RouteComponentProps<any>
+> {
   render() {
     const { category } = this.props
     return (
@@ -29,12 +32,9 @@ export default class ProductCard extends React.PureComponent<PropTypes> {
             {category.name}
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button variant="outlined" size="small">
-            修改
-          </Button>
-        </CardActions>
       </FullWidthCard>
     )
   }
 }
+
+export default withRouter(CategoryCard)

@@ -5,54 +5,81 @@ import { TextField } from '@material-ui/core'
 import FlexContainer from '../presentational/FlexContainer'
 import BottomButtonGroup from '../presentational/BottomButtonGroup'
 import { compose } from 'redux'
-import { withRouter } from 'react-router-dom'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 import { connect } from 'react-redux'
 import * as uiActions from '../../saga/action'
+import { CategoryType } from '../../store/reducer/category'
+import { get, isEmpty } from 'lodash'
+import { getCategoryById } from '../../store/getter'
 
 type PropTypes = {
+  category: CategoryType
   onCancel: () => void
-  onSubmit: (product: StateTypes) => void
+  onSubmit: (category: CategoryType) => void
 }
 
 type StateTypes = {
-  name: string
+  category: CategoryType | null
 }
 
-class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
+class AddProduct extends React.PureComponent<
+  PropTypes & RouteComponentProps<any>,
+  StateTypes
+> {
   state = {
-    name: '',
+    category: this.props.category || null,
   }
   handleValueChange = (prop: string) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    this.setState({ [prop]: event.target.value })
+    if (this.state.category) {
+      this.setState({
+        category: {
+          ...this.state.category,
+          [prop]: event.target.value,
+        },
+      })
+    } else {
+      this.setState({
+        category: {
+          [prop]: event.target.value,
+        },
+      })
+    }
   }
 
   clear = () => {
-    this.setState({ name: '' })
+    this.setState({ category: null })
   }
+
   handleSubmit = () => {
-    if (this.state.name == null || this.state.name.length === 0) {
+    const name = get(this.state, 'category.name')
+    if (isEmpty(name)) {
       alert('类别名无效，请重新输入')
       this.clear()
       return
     }
 
-    this.props.onSubmit(this.state)
+    this.props.onSubmit(this.state.category)
     this.clear()
   }
   render() {
+    console.log(this.props.category)
     return (
       <Container>
-        <SimpleNavigation title="添加产品类别" rightAction={null}>
+        <SimpleNavigation
+          onBackClick={null}
+          title="添加产品类别"
+          rightAction={null}
+        >
           <FlexContainer justifyContent="space-between">
             <TextField
               id="outlined-simple-start-adornment"
               fullWidth
               required
-              value={this.state.name}
+              value={get(this.state, 'category.name', '')}
               onChange={this.handleValueChange('name')}
-              variant="outlined"
+              variant="standard"
               label="产品类别名称"
             />
             <BottomButtonGroup

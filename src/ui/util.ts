@@ -16,5 +16,9 @@ export const calculateCheckAmount = (checkout: CheckoutDataType) => {
       ),
     0
   )
-  return { sumSubProducts, sumProducts }
+  return {
+    sumSubProducts,
+    sumProducts,
+    formattedSum: (sumSubProducts + sumProducts).toFixed(2),
+  }
 }
