@@ -3,14 +3,40 @@ import Container from '../presentational/Container'
 import FlexContainer from '../presentational/FlexContainer'
 import ButtonLink from '../presentational/ButtonLink'
 import Button from '../presentational/BlockButton'
-import { Typography } from '@material-ui/core'
+import { Typography, Link } from '@material-ui/core'
+import { connect } from 'react-redux'
+import { ClientType } from '../../store/reducer/client'
+import { getClient } from '../../store/getter'
+import Login from './Login'
+import { logout } from '../../saga/action'
 
-export default class Home extends React.PureComponent {
+type PropTypes = {
+  client: ClientType
+  onLogout: () => void
+}
+
+class Home extends React.PureComponent<PropTypes> {
   render() {
+    if (!this.props.client.userId) {
+      return <Login />
+    }
+
     return (
       <Container>
         <FlexContainer withPadding justifyContent="space-evenly">
           <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: 5,
+                right: 5,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <p style={{ marginRight: 5 }}>{this.props.client.displayName}</p>
+              <Link onClick={this.props.onLogout}>切换商户</Link>
+            </div>
             <Typography component="h3" variant="h2">
               <p>下单系统</p>
             </Typography>
@@ -37,3 +63,8 @@ export default class Home extends React.PureComponent {
     )
   }
 }
+
+export default connect(
+  getClient,
+  { onLogout: logout }
+)(Home)

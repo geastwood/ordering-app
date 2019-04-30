@@ -13,6 +13,7 @@ import AddCategory from './ui/layout/AddCategory'
 import AddProduct from './ui/layout/AddProduct'
 import Order from './ui/layout/Order'
 import Checkout from './ui/layout/Checkout'
+import Login from './ui/layout/Login'
 
 const { store, persistor } = createStore(rootSaga)
 

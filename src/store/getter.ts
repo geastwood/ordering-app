@@ -62,3 +62,7 @@ export const getCheckout = (state: AppState) => ({
   checkout: state.checkout,
   pendingCheckout: state.pendingCheckout,
 })
+
+export const getClient = (state: AppState) => ({
+  client: state.client,
+})

@@ -7,6 +7,17 @@ export const ADD_CATEGORY = 'ui/ADD_CATEGORY'
 export const CHECKOUT = 'ui/CHECKOUT'
 export const POLL_CHECKOUT_STATUS = 'ui/POLL_CHECKOUT_STATUS'
 export const RESET_CHECKOUT = 'ui/RESET_CHECKOUT'
+export const LOGIN = 'ui/login'
+export const LOGOUT = 'ui/logout'
+
+export const login = (username: string, password: string) => ({
+  type: LOGIN,
+  payload: { username, password },
+})
+
+export const logout = () => ({
+  type: LOGOUT,
+})
 
 export const addProduct = (payload: {
   price: string
