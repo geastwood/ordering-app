@@ -2,7 +2,7 @@ import * as React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { HashRouter as Router, Route } from 'react-router-dom'
 
 import createStore from './store'
 import rootSaga from './saga'
@@ -32,7 +32,7 @@ class Root extends React.PureComponent {
           </Router>
         </PersistGate>
       </Provider>
-   )
+    )
   }
 }
 

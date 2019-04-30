@@ -49,7 +49,7 @@ class Home extends React.PureComponent<PropTypes> {
           <FlexContainer>
             <ButtonLink path="/categories">
               <Button variant="contained" color="primary">
-                <p style={{ fontSize: '1.5rem', color: 'white' }}>分类</p>
+                <p style={{ fontSize: '1.5rem', color: 'white' }}>产品分类</p>
               </Button>
             </ButtonLink>
             <ButtonLink path="/products">

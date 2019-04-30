@@ -58,7 +58,6 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
   handleSubmit = () => {
     if (this.state.name == null || this.state.name.length === 0) {
       alert('产品名无效，请重新输入')
-      this.clear()
       return
     }
 
@@ -67,7 +66,6 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
       Number.isNaN(Number(this.state.price))
     ) {
       alert('产品价格无效，请重新输入')
-      this.clear()
       return
     }
     this.props.onSubmit(omit(this.state, ['toAddSubProducts']))

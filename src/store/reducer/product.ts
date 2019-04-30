@@ -1,5 +1,10 @@
-import { StoreActionTypes, PRODUCT_ADD } from '../action'
-import { CategoryType } from './category'
+import {
+  StoreActionTypes,
+  PRODUCT_ADD,
+  CATEGORY_REMOVE,
+  PRODUCT_REMOVE,
+} from '../action'
+import category, { CategoryType } from './category'
 
 export type ProductType = {
   id: string
@@ -25,6 +30,37 @@ export default (
 
       return [...state, action.product]
 
+    case PRODUCT_REMOVE:
+      return state.reduce((list, product) => {
+        if (product.id === action.product.id) {
+          return list
+        }
+
+        return list.concat({
+          ...product,
+          subProducts: product.subProducts.filter(
+            sub => sub.id !== action.product.id
+          ),
+        })
+      }, [])
+
+    case CATEGORY_REMOVE:
+      return state.map(product => {
+        return {
+          ...product,
+          categories: product.categories.filter(
+            c => c.id !== action.category.id
+          ),
+          subProducts: product.subProducts.map(subProject => {
+            return {
+              ...subProject,
+              categories: subProject.categories.filter(
+                c => c.id !== action.category.id
+              ),
+            }
+          }),
+        }
+      })
     default:
       return state
   }

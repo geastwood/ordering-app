@@ -9,8 +9,18 @@ export interface ProductAddType {
   product: ProductType
 }
 
+export interface ProductRemoveType {
+  type: typeof PRODUCT_REMOVE
+  product: ProductType
+}
+
 export interface CategoryAddType {
   type: typeof CATEGORY_ADD
+  category: CategoryType
+}
+
+export interface CategoryRemoveType {
+  type: typeof CATEGORY_REMOVE
   category: CategoryType
 }
 
@@ -44,7 +54,9 @@ export interface CheckoutRemoveType {
 }
 
 export const PRODUCT_ADD = 'store/PRODUCT_ADD'
+export const PRODUCT_REMOVE = 'store/PRODUCT_REMOVE'
 export const CATEGORY_ADD = 'store/CATEGORY_ADD'
+export const CATEGORY_REMOVE = 'store/CATEGORY_REMOVE'
 export const CHECKOUT_RECEIVE = 'store/CHECKOUT_RECEIVE'
 export const PENDING_CHECKOUT_RECEIVE = 'store/PENDING_CHECKOUT_RECEIVE'
 export const PENDING_CHECKOUT_REMOVE = 'store/PENDING_CHECKOUT_REMOVE'
@@ -71,8 +83,18 @@ export const productAdd = (product: ProductType) => ({
   product,
 })
 
+export const productRemove = (product: ProductType) => ({
+  type: PRODUCT_REMOVE,
+  product,
+})
+
 export const categoryAdd = (category: CategoryType) => ({
   type: CATEGORY_ADD,
+  category,
+})
+
+export const categoryRemove = (category: CategoryType) => ({
+  type: CATEGORY_REMOVE,
   category,
 })
 
@@ -98,7 +120,9 @@ export const pendingCheckoutRemove = (): PendingCheckoutRemoveType => ({
 
 export type StoreActionTypes =
   | ProductAddType
+  | ProductRemoveType
   | CategoryAddType
+  | CategoryRemoveType
   | CheckoutReceiveType
   | CheckoutRemoveType
   | PendingCheckoutReceiveType

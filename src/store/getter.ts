@@ -1,6 +1,9 @@
 import { AppState } from './reducer/index'
 
-export const getProducts = (state: AppState) => ({ products: state.product })
+export const getProducts = (state: AppState) => ({
+  products: state.product,
+  hasCategories: state.category.length > 0,
+})
 export const getCategories = (state: AppState) => ({
   categories: state.category,
 })

@@ -12,9 +12,18 @@ import { groupBy, get } from 'lodash'
 
 type PropTypes = {
   products: ProductType[]
+  hasCategories: boolean
 }
 
 class Products extends React.PureComponent<PropTypes> {
+  handleAddProduct = () => {
+    if (!this.props.hasCategories) {
+      alert('请先定义产品分类。')
+      this.props.history.push('/')
+    } else {
+      this.props.history.push('/product/add')
+    }
+  }
   render() {
     const { products } = this.props
     const data = groupBy(products, product =>
@@ -25,9 +34,7 @@ class Products extends React.PureComponent<PropTypes> {
         <SimpleNavigation
           title="产品目录"
           onBackClick={null}
-          rightAction={props => (
-            <AddButton onClick={() => props.history.push('/product/add')} />
-          )}
+          rightAction={props => <AddButton onClick={this.handleAddProduct} />}
         >
           {products.length ? (
             <Grid container>
@@ -72,7 +79,7 @@ class Products extends React.PureComponent<PropTypes> {
                 alignItems: 'center',
               }}
             >
-              <p>无产品定义，点击右上角"+"，添加产品</p>
+              <p>无产品定义，点击右上角"+"来添加产品</p>
             </div>
           )}
         </SimpleNavigation>

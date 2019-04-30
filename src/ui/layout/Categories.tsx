@@ -40,7 +40,7 @@ class Categories extends React.PureComponent<PropTypes> {
                 alignItems: 'center',
               }}
             >
-              <p>无产品分类，点击右上角"+"，添加分类</p>
+              <p>无产品分类，点击右上角"+"来添加分类</p>
             </div>
           )}
         </SimpleNavigation>

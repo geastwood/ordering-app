@@ -1,4 +1,4 @@
-import { StoreActionTypes, CATEGORY_ADD } from '../action'
+import { StoreActionTypes, CATEGORY_ADD, CATEGORY_REMOVE } from '../action'
 
 export type CategoryType = {
   id: string
@@ -13,13 +13,14 @@ export default (
 ): CategoryType[] => {
   switch (action.type) {
     case CATEGORY_ADD:
-      // only add if `id` doesn't exist
       if (state.find(({ id }) => id === action.category.id)) {
         return state
       }
 
       return [...state, action.category]
 
+    case CATEGORY_REMOVE:
+      return state.filter(category => category.id !== action.category.id)
     default:
       return state
   }
