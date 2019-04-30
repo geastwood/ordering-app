@@ -39,6 +39,10 @@ export interface ClientRemoveType {
   type: typeof CLIENT_REMOVE
 }
 
+export interface CheckoutRemoveType {
+  type: typeof CHECKOUT_REMOVE
+}
+
 export const PRODUCT_ADD = 'store/PRODUCT_ADD'
 export const CATEGORY_ADD = 'store/CATEGORY_ADD'
 export const CHECKOUT_RECEIVE = 'store/CHECKOUT_RECEIVE'
@@ -47,6 +51,7 @@ export const PENDING_CHECKOUT_REMOVE = 'store/PENDING_CHECKOUT_REMOVE'
 export const MARK_PAID = 'store/MARK_PAID'
 export const CLIENT_RECEIVE = 'store/CLIENT_RECEIVE'
 export const CLIENT_REMOVE = 'store/CLIENT_REMOVE'
+export const CHECKOUT_REMOVE = 'store/CHECKOUT_REMOVE'
 
 export const clientReceive = (client: ClientType): ClientReceiveType => ({
   type: CLIENT_RECEIVE,
@@ -76,6 +81,10 @@ export const checkoutReceive = (checkout: CheckoutDataType) => ({
   checkout,
 })
 
+export const checkoutRemove = (): CheckoutRemoveType => ({
+  type: CHECKOUT_REMOVE,
+})
+
 export const pendingCheckoutReceive = (
   payload: PendingCheckoutType
 ): PendingCheckoutReceiveType => ({
@@ -91,6 +100,7 @@ export type StoreActionTypes =
   | ProductAddType
   | CategoryAddType
   | CheckoutReceiveType
+  | CheckoutRemoveType
   | PendingCheckoutReceiveType
   | PendingCheckoutRemoveType
   | MarkPaidType

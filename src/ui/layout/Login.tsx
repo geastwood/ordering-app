@@ -38,7 +38,7 @@ class Login extends React.PureComponent<PropTypes, StateTypes> {
       <Container>
         <FlexContainer withPadding justifyContent="space-evenly">
           <div style={{ textAlign: 'center' }}>
-            <Typography component="h3" variant="h2">
+            <Typography component="h3" variant="h4">
               <p>登录</p>
             </Typography>
           </div>
@@ -50,7 +50,7 @@ class Login extends React.PureComponent<PropTypes, StateTypes> {
               fullWidth
               value={this.state.username}
               margin="normal"
-              variant="outlined"
+              variant="standard"
               onChange={this.handleUsernameChange}
               InputLabelProps={{
                 shrink: true,
@@ -65,7 +65,7 @@ class Login extends React.PureComponent<PropTypes, StateTypes> {
               onChange={this.handlePasswordChange}
               autoComplete="current-password"
               margin="normal"
-              variant="outlined"
+              variant="standard"
               InputLabelProps={{
                 shrink: true,
               }}

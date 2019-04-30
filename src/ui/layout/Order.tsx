@@ -91,8 +91,9 @@ class OrderBook extends React.PureComponent<
   }
 
   handleCheckout = () => {
-    this.props.history.push('/checkout')
+    console.log('state', this.state)
     this.props.onCheckoutClicked(this.state)
+    this.props.history.push('/checkout')
   }
   handleReset = () => {
     this.setState({

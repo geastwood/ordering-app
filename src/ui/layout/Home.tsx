@@ -9,13 +9,18 @@ import { ClientType } from '../../store/reducer/client'
 import { getClient } from '../../store/getter'
 import Login from './Login'
 import { logout } from '../../saga/action'
+import { checkoutRemove } from '../../store/action'
 
 type PropTypes = {
   client: ClientType
   onLogout: () => void
+  onMount: () => void
 }
 
 class Home extends React.PureComponent<PropTypes> {
+  componentDidMount() {
+    this.props.onMount()
+  }
   render() {
     if (!this.props.client.userId) {
       return <Login />
@@ -37,7 +42,7 @@ class Home extends React.PureComponent<PropTypes> {
               <p style={{ marginRight: 5 }}>{this.props.client.displayName}</p>
               <Link onClick={this.props.onLogout}>切换商户</Link>
             </div>
-            <Typography component="h3" variant="h2">
+            <Typography component="h3" variant="h4">
               <p>下单系统</p>
             </Typography>
           </div>
@@ -66,5 +71,5 @@ class Home extends React.PureComponent<PropTypes> {
 
 export default connect(
   getClient,
-  { onLogout: logout }
+  { onLogout: logout, onMount: checkoutRemove }
 )(Home)

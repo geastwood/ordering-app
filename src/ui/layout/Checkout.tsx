@@ -26,16 +26,31 @@ class Checkout extends React.PureComponent<
 > {
   state = {}
 
-  componentDidUpdate() {
-    // start polling for order status
+  //   componentDidUpdate() {
+  //     // start polling for order status
+  //     if (
+  //       !this.props.pendingCheckout.paid &&
+  //       this.props.pendingCheckout.prepayId
+  //     ) {
+  //       this.props.onMount &&
+  //         this.props.onMount(this.props.pendingCheckout.prepayId)
+  //     }
+  //   }
+
+  componentWillReceiveProps(newProps: PropTypes) {
+    console.log(
+      this.props.pendingCheckout.prepayId,
+      newProps.pendingCheckout.prepayId
+    )
     if (
       !this.props.pendingCheckout.paid &&
-      this.props.pendingCheckout.prepayId
+      this.props.pendingCheckout.prepayId !== newProps.pendingCheckout.prepayId
     ) {
-      this.props.onMount &&
-        this.props.onMount(this.props.pendingCheckout.prepayId)
+      newProps.pendingCheckout.prepayId &&
+        this.props.onMount(newProps.pendingCheckout.prepayId)
     }
   }
+
   handleConfirm = () => {
     this.props.onResetCheckout()
     this.props.history.push('/')
@@ -77,9 +92,11 @@ class Checkout extends React.PureComponent<
               </div>
             ) : null}
 
-            <Typography variant="h4">
-              {sumProducts + sumSubProducts}元
-            </Typography>
+            {!paid ? (
+              <Typography variant="h4">
+                {sumProducts + sumSubProducts}元
+              </Typography>
+            ) : null}
           </div>
         </SimpleNavigation>
       </Container>

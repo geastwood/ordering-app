@@ -1,4 +1,4 @@
-import { StoreActionTypes, CHECKOUT_RECEIVE } from '../action'
+import { StoreActionTypes, CHECKOUT_RECEIVE, CHECKOUT_REMOVE } from '../action'
 import { ProductType } from './product'
 
 export type CheckoutDataType = {
@@ -18,7 +18,8 @@ export default (
   switch (action.type) {
     case CHECKOUT_RECEIVE:
       return action.checkout
-
+    case CHECKOUT_REMOVE:
+      return defaultState
     default:
       return state
   }

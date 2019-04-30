@@ -1,4 +1,4 @@
-import { fork, take, put, select } from 'redux-saga/effects'
+import { delay, fork, take, put, select, call } from 'redux-saga/effects'
 import * as uiActions from './action'
 import * as storeActions from '../store/action'
 import * as uuid from 'uuid'
@@ -6,19 +6,19 @@ import { ProductType } from '../store/reducer/product'
 import { CategoryType } from '../store/reducer/category'
 import * as qrcode from 'qrcode'
 import { calculateCheckAmount } from '../ui/util'
-import { getClient } from '../store/getter'
+import { getClient, getCheckout } from '../store/getter'
 import { ClientType } from '../store/reducer/client'
 
 function* handleLogout() {
   while (true) {
     yield take(uiActions.LOGOUT)
     const answer = confirm('确认注销？')
-    console.log(answer)
     if (answer) {
       yield put(storeActions.clientRemove())
     }
   }
 }
+
 function* handleLogin() {
   while (true) {
     const action: ReturnType<typeof uiActions.login> = yield take(
@@ -43,7 +43,7 @@ function* handleLogin() {
       if (json.status === 'success') {
         yield put(storeActions.clientReceive(json))
       } else {
-        alert('登录失败，请稍后重试。')
+        alert(json.msg || '登录失败，请稍后重试。')
       }
     } catch (error) {
       alert('登录失败，请稍后重试。')
@@ -51,11 +51,16 @@ function* handleLogin() {
   }
 }
 
+function* printReceipt() {
+  const { checkout } = yield select(getCheckout)
+  console.log(checkout)
+}
+
 function* handleResetCheckout() {
   while (true) {
     yield take(uiActions.RESET_CHECKOUT)
 
-    yield put(storeActions.pendingCheckoutRemove())
+    yield put(storeActions.checkoutRemove())
   }
 }
 
@@ -66,23 +71,27 @@ function* handlePollingCheckoutStatus() {
     )
 
     let success = false
-
+    yield call(printReceipt)
     while (!success) {
       try {
-        const res = yield fetch(
-          `https://v1.api.tc.vastchain.ltd/submerchant-pay/prePay/${
-            action.payload
-          }?waitForFinish=1`
-        )
+        const url = `https://v1.api.tc.vastchain.ltd/submerchant-pay/prePay/${
+          action.payload
+        }?waitForFinish=1`
+
+        const res = yield fetch(url)
         const json = yield res.json()
+
+        console.log(json.status)
         if (json.status === 'finish') {
           success = true
+          yield put(storeActions.markPaid())
+          yield put(storeActions.checkoutRemove())
+        } else {
+          yield delay(50)
         }
       } catch (error) {
         console.error(error)
       }
-
-      yield put(storeActions.markPaid())
     }
   }
 }
@@ -125,13 +134,17 @@ function* handleCheckout() {
       uiActions.CHECKOUT
     )
 
-    const client: ClientType = yield select(getClient)
+    yield put(storeActions.pendingCheckoutRemove())
+
+    const { client }: { client: ClientType } = yield select(getClient)
 
     if (!client.userId) {
+      alert('无法得到商户信息。')
       break
     }
 
     yield put(storeActions.checkoutReceive(action.payload))
+
     const { sumProducts, sumSubProducts } = calculateCheckAmount(action.payload)
     const totalAmount = (sumProducts + sumSubProducts).toFixed(2)
 
@@ -152,7 +165,9 @@ function* handleCheckout() {
         }),
       }
     )
+
     const { status, prepayId } = yield res.json()
+
     if (status !== 'success') {
       break
     }
@@ -176,7 +191,9 @@ function* handleCheckout() {
       break
     }
 
-    const qrcodeUrl = yield qrcode.toDataURL(wechatJson.args.code_url)
+    const qrcodeUrl = yield qrcode.toDataURL(wechatJson.args.code_url, {
+      width: 500,
+    })
 
     yield put(
       storeActions.pendingCheckoutReceive({
