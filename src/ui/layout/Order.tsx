@@ -187,7 +187,7 @@ class OrderBook extends React.PureComponent<
                 color="primary"
                 onClick={this.handleCheckout}
               >
-                结账 ({calculateCheckAmount(this.props.checkout).formattedSum}
+                收款 ({calculateCheckAmount(this.props.checkout).formattedSum}
                 元)
               </BlockButton>
             </div>

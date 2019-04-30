@@ -60,31 +60,31 @@ function* handleLogin() {
   }
 }
 
-function* printReceipt() {
+function* printReceipt(prepayId: string) {
   const { checkout }: AppState = yield select(getCheckout)
   const { client }: AppState = yield select(getClient)
 
   const { sumProducts, sumSubProducts } = calculateCheckAmount(checkout)
   const { selectedProducts, subProductsMap } = checkout
 
-  const menu = selectedProducts
-    .map(product => ({
+  let menu = []
+  selectedProducts.forEach(product => {
+    menu = menu.concat({
       name: product.name,
       price: Number(product.price).toFixed(2),
-    }))
-    .concat(
-      Object.keys(subProductsMap).reduce((carry, name) => {
-        return carry.concat(
-          subProductsMap[name].map(product => ({
-            name: product.name,
-            price: Number(product.price).toFixed(2),
-          }))
-        )
-      }, [])
-    )
+    })
+    const subProducts = subProductsMap[product.id] || []
+    subProducts.forEach(subProduct => {
+      menu = menu.concat({
+        name: ` +${subProduct.name}`,
+        price: Number(subProduct.price).toFixed(2),
+      })
+    })
+  })
 
   const data = {
     menu,
+    prepayId,
     totalAmount: (sumProducts + sumSubProducts).toFixed(2),
     subMerchantId: client.userId,
     subMerchantDisplayName: client.displayName,
@@ -104,7 +104,6 @@ function* handleResetCheckout() {
 }
 
 function* handlePollingCheckoutStatus(prepayId: string) {
-  yield call(printReceipt)
   let success = false
   while (!success) {
     try {
@@ -116,7 +115,7 @@ function* handlePollingCheckoutStatus(prepayId: string) {
         success = true
         yield put(storeActions.markPaid())
         yield put(storeActions.checkoutRemove())
-        printReceipt()
+        printReceipt(prepayId)
       } else {
         yield delay(50)
       }

@@ -135,9 +135,9 @@ export default class ProductCard extends React.PureComponent<
                   {Object.keys(selectedSubProductsGrouped).map(
                     subProductName => (
                       <li key={subProductName}>
-                        {`(${
+                        {`${
                           selectedSubProductsGrouped[subProductName].length
-                        }个) ${subProductName}`}
+                        }个 ${subProductName}`}
                       </li>
                     )
                   )}

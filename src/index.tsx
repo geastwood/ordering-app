@@ -32,7 +32,7 @@ class Root extends React.PureComponent {
           </Router>
         </PersistGate>
       </Provider>
-    )
+   )
   }
 }
 

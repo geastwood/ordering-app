@@ -132,7 +132,7 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
                     value="subproduct"
                   />
                 }
-                label="是添加产品"
+                label="这个是子产品"
               />
               <TextField
                 id="outlined-adornment-amount"
