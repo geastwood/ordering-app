@@ -1,50 +1,56 @@
 import * as React from 'react'
 import Container from '../presentational/Container'
 import SimpleNavigation from './SimpleNavigation'
-import * as qrcode from 'qrcode'
-import { Typography } from '@material-ui/core'
+import { Typography, Button } from '@material-ui/core'
 import { getCheckout } from '../../store/getter'
 import { CheckoutDataType } from '../../store/reducer/checkout'
 import { connect } from 'react-redux'
+import { calculateCheckAmount } from '../util'
+import { PendingCheckoutType } from '../../store/reducer/pendingCheckout'
+import { pollCheckoutStatus, resetCheckout } from '../../saga/action'
+import { compose } from 'redux'
+import { withRouter, RouteComponentProps } from 'react-router'
 
 type PropTypes = {
   checkout: CheckoutDataType
+  pendingCheckout: PendingCheckoutType
+  onMount: (prepayId: string) => void
+  onResetCheckout: () => void
 }
 
-type StateTypes = {
-  dataUrl: null | string
-}
+type StateTypes = {}
 
-class Checkout extends React.PureComponent<PropTypes, StateTypes> {
-  state = {
-    dataUrl: null,
+class Checkout extends React.PureComponent<
+  PropTypes & RouteComponentProps<any>,
+  StateTypes
+> {
+  state = {}
+
+  componentDidUpdate() {
+    // start polling for order status
+    if (
+      !this.props.pendingCheckout.paid &&
+      this.props.pendingCheckout.prepayId
+    ) {
+      this.props.onMount &&
+        this.props.onMount(this.props.pendingCheckout.prepayId)
+    }
   }
-  componentWillMount() {
-    qrcode
-      .toDataURL('helloworld')
-      .then((dataUrl: string) => this.setState({ dataUrl }))
+  handleConfirm = () => {
+    this.props.onResetCheckout()
+    this.props.history.push('/')
   }
 
   render() {
-    const { subProductsMap, selectedProducts } = this.props.checkout
-    const sumProducts = selectedProducts.reduce(
-      (sum, { price }) => sum + (Number(price) || 0),
-      0
+    const { sumProducts, sumSubProducts } = calculateCheckAmount(
+      this.props.checkout
     )
 
-    const sumSubProducts = Object.keys(subProductsMap).reduce(
-      (prev, curr) =>
-        prev +
-        subProductsMap[curr].reduce(
-          (carry, sub) => carry + (Number(sub.price) || 0),
-          0
-        ),
-      0
-    )
+    const { qrCode, paid } = this.props.pendingCheckout
 
     return (
       <Container>
-        <SimpleNavigation title="收款" rightAction={null}>
+        <SimpleNavigation onBackClick={null} title="收款" rightAction={null}>
           <div
             style={{
               display: 'flex',
@@ -55,8 +61,20 @@ class Checkout extends React.PureComponent<PropTypes, StateTypes> {
             }}
           >
             <Typography variant="h4">请扫码付款</Typography>
-            {this.state.dataUrl != null ? (
-              <img src={this.state.dataUrl} alt="" width="100%" />
+            {qrCode != null && !paid ? (
+              <img src={qrCode} alt="" width="100%" />
+            ) : null}
+            {paid ? (
+              <div style={{ padding: 30 }}>
+                <Button
+                  size="large"
+                  variant="outlined"
+                  color="secondary"
+                  onClick={this.handleConfirm}
+                >
+                  支付成功， 返回
+                </Button>
+              </div>
             ) : null}
 
             <Typography variant="h4">
@@ -69,4 +87,10 @@ class Checkout extends React.PureComponent<PropTypes, StateTypes> {
   }
 }
 
-export default connect(getCheckout)(Checkout)
+export default compose(
+  withRouter,
+  connect(
+    getCheckout,
+    { onMount: pollCheckoutStatus, onResetCheckout: resetCheckout }
+  )
+)(Checkout)

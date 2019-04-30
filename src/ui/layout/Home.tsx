@@ -18,17 +18,17 @@ export default class Home extends React.PureComponent {
           <FlexContainer>
             <ButtonLink path="/categories">
               <Button variant="contained" color="primary">
-                <p style={{ fontSize: '2rem', color: 'white' }}>分类</p>
+                <p style={{ fontSize: '1.5rem', color: 'white' }}>分类</p>
               </Button>
             </ButtonLink>
             <ButtonLink path="/products">
               <Button variant="contained" color="primary">
-                <p style={{ fontSize: '2rem', color: 'white' }}>产品</p>
+                <p style={{ fontSize: '1.5rem', color: 'white' }}>产品</p>
               </Button>
             </ButtonLink>
             <ButtonLink path="/order">
               <Button variant="contained" color="primary">
-                <p style={{ fontSize: '2rem', color: 'white' }}>下单</p>
+                <p style={{ fontSize: '1.5rem', color: 'white' }}>下单</p>
               </Button>
             </ButtonLink>
           </FlexContainer>

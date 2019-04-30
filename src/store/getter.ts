@@ -60,4 +60,5 @@ export const getOrderBook = (state: AppState) => {
 
 export const getCheckout = (state: AppState) => ({
   checkout: state.checkout,
+  pendingCheckout: state.pendingCheckout,
 })
