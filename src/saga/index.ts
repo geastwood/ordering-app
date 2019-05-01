@@ -168,7 +168,7 @@ function* handleCreateCategory() {
       uiActions.ADD_CATEGORY
     )
 
-    const id = action.payload.id || uuid.v4()
+    const id = action.meta.categoryId || uuid.v4()
 
     const category: CategoryType = {
       ...action.payload,

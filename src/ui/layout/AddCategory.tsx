@@ -15,11 +15,14 @@ import { getCategoryById } from '../../store/getter'
 type PropTypes = {
   category: CategoryType
   onCancel: () => void
-  onSubmit: (category: CategoryType) => void
+  onSubmit: (
+    category: CategoryType,
+    categoryId: string | null
+  ) => ReturnType<typeof uiActions.addCategory>
 }
 
 type StateTypes = {
-  category: CategoryType | null
+  name: string
 }
 
 class AddProduct extends React.PureComponent<
@@ -27,40 +30,29 @@ class AddProduct extends React.PureComponent<
   StateTypes
 > {
   state = {
-    category: this.props.category || null,
+    name: this.props.category.name,
   }
-  handleValueChange = (prop: string) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (this.state.category) {
-      this.setState({
-        category: {
-          ...this.state.category,
-          [prop]: event.target.value,
-        },
-      })
-    } else {
-      this.setState({
-        category: {
-          [prop]: event.target.value,
-        },
-      })
-    }
+  handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      name: event.target.value,
+    })
   }
 
   clear = () => {
-    this.setState({ category: null })
+    this.setState({ name: '' })
   }
 
   handleSubmit = () => {
-    const name = get(this.state, 'category.name')
-    if (isEmpty(name)) {
+    if (isEmpty(this.state.name)) {
       alert('类别名无效，请重新输入')
       this.clear()
       return
     }
 
-    this.props.onSubmit(this.state.category)
+    this.props.onSubmit(
+      { name: this.state.name },
+      this.props.category.id || null
+    )
     this.clear()
   }
   render() {
@@ -77,8 +69,8 @@ class AddProduct extends React.PureComponent<
               id="outlined-simple-start-adornment"
               fullWidth
               required
-              value={get(this.state, 'category.name', '')}
-              onChange={this.handleValueChange('name')}
+              value={this.state.name}
+              onChange={this.handleNameChange}
               variant="standard"
               label="产品类别名称"
             />
@@ -96,7 +88,7 @@ class AddProduct extends React.PureComponent<
 const ConnectedAddCategory = compose(
   withRouter,
   connect(
-    null,
+    getCategoryById,
     {
       onSubmit: uiActions.addCategory,
     }

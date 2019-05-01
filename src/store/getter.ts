@@ -21,7 +21,7 @@ export const getCategories = (state: AppState) => ({
 })
 
 export const getOrderBook = (state: AppState) => {
-  const { products } = getProducts(state)
+  const products = state.product
   const data = products.reduce((carry, product) => {
     const categories = product.categories
 
@@ -47,10 +47,13 @@ export const getClient = (state: AppState) => ({
   client: state.client,
 })
 
-export const getCategoryById = (state: AppState, { match }) => {
+export const getCategoryById = (
+  state: AppState,
+  { match }: RouteComponentProps<any>
+) => {
   const category = state.category.find(c => c.id === match.params.id)
 
   return {
-    category: category || null,
+    category: category || { name: '' },
   }
 }

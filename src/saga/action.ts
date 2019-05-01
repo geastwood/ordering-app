@@ -34,9 +34,15 @@ export const addProduct = (
     productId,
   },
 })
-export const addCategory = (payload: CategoryType) => ({
+export const addCategory = (
+  payload: { name: string },
+  categoryId: string | null
+) => ({
   type: ADD_CATEGORY,
   payload,
+  meta: {
+    categoryId,
+  },
 })
 
 export const checkout = () => ({

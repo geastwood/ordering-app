@@ -20,7 +20,7 @@ class Categories extends React.PureComponent<PropTypes> {
         <SimpleNavigation
           title="种类目录"
           rightAction={props => (
-            <AddButton onClick={() => props.history.push('/category/add')} />
+            <AddButton onClick={() => props.history.push('/category/new')} />
           )}
         >
           {categories.length ? (

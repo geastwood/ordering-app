@@ -14,7 +14,12 @@ export default (
   switch (action.type) {
     case CATEGORY_ADD:
       if (state.find(({ id }) => id === action.category.id)) {
-        return state
+        return state.map(category => {
+          if (category.id === action.category.id) {
+            return { ...category, ...action.category }
+          }
+          return category
+        })
       }
 
       return [...state, action.category]

@@ -6,12 +6,13 @@ import {
   CardActions,
   Typography,
   withStyles,
-  Button,
+  Grid,
 } from '@material-ui/core'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
 import { categoryRemove } from '../../store/action'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
+import Button from '../presentational/BlockButton'
 
 type PropTypes = {
   category: CategoryType
@@ -34,6 +35,12 @@ class CategoryCard extends React.PureComponent<
       this.props.onRemove(category)
     }
   }
+  handleEdit = (category: CategoryType) => {
+    if (category.id) {
+      this.props.history.push(`category/edit/${category.id}`)
+    }
+  }
+
   render() {
     const { category } = this.props
     return (
@@ -43,14 +50,28 @@ class CategoryCard extends React.PureComponent<
             {category.name}
           </Typography>
         </CardContent>
+
         <CardActions>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => this.handleRemove(category)}
-          >
-            删除
-          </Button>
+          <Grid container spacing={16}>
+            <Grid item xs={6}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => this.handleRemove(category)}
+              >
+                删除
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => this.handleEdit(category)}
+              >
+                修改
+              </Button>
+            </Grid>
+          </Grid>
         </CardActions>
       </FullWidthCard>
     )
