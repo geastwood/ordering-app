@@ -21,7 +21,7 @@ class Products extends React.PureComponent<PropTypes> {
       alert('请先定义产品分类。')
       this.props.history.push('/')
     } else {
-      this.props.history.push('/product/add')
+      this.props.history.push('/product/new')
     }
   }
   render() {

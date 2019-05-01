@@ -17,8 +17,9 @@ import { omit } from 'lodash'
 
 type PropTypes = {
   products: ProductType[]
+  product: ProductType
   onCancel: () => void
-  onSubmit: (product: StateTypes) => void
+  onSubmit: (product: StateTypes, productId: null | string) => void
 }
 
 type StateTypes = {
@@ -32,12 +33,14 @@ type StateTypes = {
 
 class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
   state = {
-    price: '',
-    isSubProduct: false,
-    toAddSubProducts: false,
-    name: '',
-    categories: [],
-    subProducts: [],
+    price: this.props.product.price,
+    isSubProduct: this.props.product.isSubProduct,
+    toAddSubProducts:
+      !this.props.product.isSubProduct &&
+      this.props.product.subProducts.length > 0,
+    name: this.props.product.name,
+    categories: this.props.product.categories,
+    subProducts: this.props.product.subProducts,
   }
   handleValueChange = (prop: string) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -68,7 +71,10 @@ class AddProduct extends React.PureComponent<PropTypes, StateTypes> {
       alert('产品价格无效，请重新输入')
       return
     }
-    this.props.onSubmit(omit(this.state, ['toAddSubProducts']))
+    this.props.onSubmit(
+      omit(this.state, ['toAddSubProducts']),
+      this.props.product.id || null
+    )
     this.clear()
   }
 

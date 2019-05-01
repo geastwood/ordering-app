@@ -147,12 +147,14 @@ function* handleCreateProduct() {
     const action: ReturnType<typeof uiActions.addProduct> = yield take(
       uiActions.ADD_PRODUCT
     )
-    const id = uuid.v4()
+    const id = action.meta.productId || uuid.v4()
+    console.log(id)
 
     const product: ProductType = {
       ...action.payload,
       id,
     }
+    console.log(product)
 
     yield fork(saveData)
 

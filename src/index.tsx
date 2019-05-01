@@ -24,7 +24,8 @@ class Root extends React.PureComponent {
           <Router>
             <Route exact path="/" component={Home} />
             <Route path="/products" component={Products} />
-            <Route path="/product/add" component={AddProduct} />
+            <Route path="/product/edit/:id" component={AddProduct} />
+            <Route path="/product/new/" component={AddProduct} />
             <Route path="/categories" component={Categories} />
             <Route path="/category/add" component={AddCategory} />
             <Route path="/order" component={Order} />

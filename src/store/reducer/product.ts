@@ -23,9 +23,14 @@ export default (
 ): ProductType[] => {
   switch (action.type) {
     case PRODUCT_ADD:
-      // only add if `id` doesn't exist
-      if (state.find(({ name }) => name === action.product.name)) {
-        return state
+      // if exist
+      if (state.find(({ id }) => id === action.product.id)) {
+        return state.map(product => {
+          if (product.id === action.product.id) {
+            return { ...product, ...action.product }
+          }
+          return product
+        })
       }
 
       return [...state, action.product]

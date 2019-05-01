@@ -18,15 +18,21 @@ export const logout = () => ({
   type: LOGOUT,
 })
 
-export const addProduct = (payload: {
-  price: string
-  name: string
-  isSubProduct: boolean
-  categories: CategoryType[]
-  subProducts: ProductType[]
-}) => ({
+export const addProduct = (
+  payload: {
+    price: string
+    name: string
+    isSubProduct: boolean
+    categories: CategoryType[]
+    subProducts: ProductType[]
+  },
+  productId: null | string
+) => ({
   type: ADD_PRODUCT,
   payload,
+  meta: {
+    productId,
+  },
 })
 export const addCategory = (payload: CategoryType) => ({
   type: ADD_CATEGORY,

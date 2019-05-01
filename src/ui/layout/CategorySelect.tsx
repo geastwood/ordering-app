@@ -60,7 +60,11 @@ class CategorySelect extends React.PureComponent<PropTypes, StateProps> {
         </InputLabel>
         <Select
           disabled={this.props.categories.length === 0}
-          value={get(this.props, 'categories[0].id', 'none')}
+          value={get(
+            this.props,
+            'selected[0].id',
+            get(this.props, 'categories[0].id', 'none')
+          )}
           onChange={this.handleChange}
           input={
             <OutlinedInput

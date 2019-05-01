@@ -1,8 +1,20 @@
 import { AppState } from './reducer/index'
+import { RouteComponentProps } from 'react-router'
 
-export const getProducts = (state: AppState) => ({
+export const getProducts = (
+  state: AppState,
+  ownProps: {} & RouteComponentProps<any>
+) => ({
   products: state.product,
   hasCategories: state.category.length > 0,
+  product: state.product.find(({ id }) => ownProps.match.params.id === id) || {
+    price: '',
+    isSubProduct: false,
+    toAddSubProducts: false,
+    name: '',
+    categories: [],
+    subProducts: [],
+  },
 })
 export const getCategories = (state: AppState) => ({
   categories: state.category,
